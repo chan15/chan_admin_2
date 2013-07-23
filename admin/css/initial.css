@@ -1,0 +1,78 @@
+.index-center {
+    width: 600px;
+    margin: 0 auto 0 auto;
+}
+label.error {
+    color: red;
+    font-size: 12px;
+}
+.modal {
+    text-align: center;
+    width: 400px !important;
+}
+#btn-save-sort {
+    display: none;
+}
+.func-main {
+    margin: 6px 0;
+    position: relative;
+    height: 30px;
+}
+.func-main .btn-add {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.func-zone {
+    margin: 6px 0;
+    position: relative;
+    height: 60px;
+}
+.func-zone .func-button {
+    width: 100%;
+    position: absolute;
+    top: 30px;
+    left: 0;
+}
+.func-button .btn-del-all {
+    position: absolute;
+    left: 0;
+    top: 0;
+} 
+.func-button .limit-number {
+    position: absolute;
+    top: -5px;
+    right: 0;
+}
+.func-zone .data-count {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.icon-resize-vertical {
+    cursor: move;
+}
+span.validation-error {
+    margin-left: 6px;
+    color: red;
+}
+.control-group label {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: normal !important;
+    line-height: 20px
+}
+.control-group input {
+    float: left;
+    margin: 4px 8px 0 0 !important;
+}
+.tab-content label{
+    font-weight: bold;
+}
+.tab-pane {
+    margin-bottom: 6px;
+}
+.clear {
+    clear: both;
+}
