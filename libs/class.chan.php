@@ -1016,21 +1016,6 @@ class chan {
             $where);
         return $this->myOneRow($sql);
     }
-    
-    /**
-     * 回傳是或否
-     * $val - 值
-     */
-    function retYesNo($val) {
-        switch ($val) {
-            case 0:
-                return '否';
-            case 1:
-                return '是';
-            default:
-                return '值錯誤';
-        }
-    }
 
     /**
      * 今天日期
