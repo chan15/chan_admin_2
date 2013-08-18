@@ -1227,7 +1227,11 @@ class chan {
             if ($nameOnly) {
                 return $thumbName;
             } else {
-                return sprintf('<img src="%s">', $thumbName);
+                list($width, $height) = getimagesize($thumbName);
+                return sprintf('<img src="%s" width="%s" height="%s">',
+                    $thumbName,
+                    $width,
+                    $height);
             }
         } else {
             // 處理縮圖
@@ -1257,7 +1261,10 @@ class chan {
                 if ($nameOnly) {
                     return $thumbName;
                 } else {
-                    return sprintf('<img src="%s">', $thumbName);
+                    return sprintf('<img src="%s" width="%s" height="%s">',
+                        $thumbName,
+                        $foo->image_dst_x,
+                        $foo->image_dst_y);
                 }
             } else {
                 if ($this->thumbDebug) return $foo->error;
@@ -1354,7 +1361,11 @@ class chan {
             if ($nameOnly) {
                 return $thumbName;
             } else {
-                return sprintf('<img src="%s">', $thumbName);
+                list($width, $height) = getimagesize($thumbName);
+                return sprintf('<img src="%s" width="%s" height="%s">',
+                    $thumbName,
+                    $width,
+                    $height);
             }
         } else {
             // 處理縮圖
@@ -1383,7 +1394,10 @@ class chan {
                 if ($nameOnly) {
                     return $thumbName;
                 } else {
-                    return sprintf('<img src="%s">', $thumbName);
+                    return sprintf('<img src="%s" width="%s" height="%s">',
+                        $thumbName,
+                        $foo->image_dst_x,
+                        $foo->image_dst_y);
                 }
             } else {
                 if ($this->thumbDebug) return $foo->error;
