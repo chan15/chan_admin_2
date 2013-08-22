@@ -15,7 +15,10 @@ $chan->dbConnect();
 $name = isset($_GET['name']) ? '%'.$_GET['name'].'%' : '%%%';
 $on = (isset($_GET['on']) && $_GET['on'] != '') ? '%'.$_GET['on'].'%' : '%%%';
 
-$sql = sprintf("SELECT t_id AS id, tbl_test.* FROM tbl_test WHERE t_name LIKE %s ORDER BY t_id DESC",
+$sql = sprintf("SELECT t_id AS id, tbl_test.*
+    FROM tbl_test 
+    WHERE t_name LIKE %s 
+    ORDER BY t_id DESC",
     $chan->toSql($name, 'text'));
 $row = $chan->myRowList($sql, $limit);
 
