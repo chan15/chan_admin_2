@@ -1,4 +1,7 @@
 {extends file="admin/admin.tpl"}
+{block name="javascript"}
+    <script src="js/modify.js" type="text/javascript"></script>
+{/block}
 {block name="content"}
 <div class="container">
     <div class="row">

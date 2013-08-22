@@ -5,9 +5,6 @@ include 'login-policy.php';
 $pageItemName = ''; // nav name
 $subItemName = ''; // sidebar name
 include 'nav.php';
-$incCssArr = array();
-$incJsArr = array('js/list.js');
-include 'inc.php';
 include 'options.php';
 $smarty->assign('pageLimitOpt', $pageLimitOpt);
 $smarty->assign('yesNoOpt', $yesNoOpt);

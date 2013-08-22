@@ -1,4 +1,7 @@
 {extends file="admin/admin.tpl"}
+{block name="javascript"}
+    <script src="js/list.js" type="text/javascript"></script>
+{/block}
 {block name="content"}
 <input type="hidden" name="id-serial" id="id-serial">
 <input type="hidden" name="sort-serial" id="sort-serial">
