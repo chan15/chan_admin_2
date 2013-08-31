@@ -14,7 +14,7 @@ $path = '../uploads/test/';
 $fileField = array('img');
 $fileRealField = array('t_img');
 $haveUpload = false;
-$chan->imgUploadRatio = 600;
+$chan->imageUploadRatio = 600;
 $chan->dbConnect();
 
 // ajax add
@@ -26,8 +26,8 @@ if (isset($_POST['add'])) {
 	// $chan->addValidateField('產品編號', 'serial', 'duplicate', 'serial_number');
 	$chan->serverValidate();
 
-	if ($chan->validateErr) {
-		echo $chan->validateMsg;
+	if ($chan->validateErroror) {
+		echo $chan->validateMessage;
 	} else {
 		if ($haveUpload) {
 			foreach ($fileField as $k => $field) {
@@ -67,8 +67,8 @@ if (isset($_POST['update'])) {
 	$chan->addValidateField('上架', 'on');
 	$chan->serverValidate();
 
-	if ($chan->validateErr) {
-		echo $chan->validateMsg;
+	if ($chan->validateErroror) {
+		echo $chan->validateMessage;
 	} else {
 		if ($haveUpload) {
 			foreach ($fileField as $k => $field) {
@@ -79,7 +79,7 @@ if (isset($_POST['update'])) {
 						exit;
 					} else {
 						$chan->addField($fileRealField[$k], $upload['img']);
-						$chan->fileDelArr[] = $chan->getFileName($fileRealField[$k]);
+						$chan->fileDeleteArray[] = $chan->getFileName($fileRealField[$k]);
 					}
 				}
 			}
@@ -92,7 +92,7 @@ if (isset($_POST['update'])) {
 		if (!$chan->dataUpdate()) {
 			echo $chan->sqlError;
 		} else {
-			$chan->dataFileDel($path);
+			$chan->dataFileDelete($path);
 		}
 	}
 

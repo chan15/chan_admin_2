@@ -18,8 +18,8 @@ foreach ($idArr as $k) {
 	switch($tableField) {
         case 'tbl':
 			$path = '../uploads/test/';
-			$chan->fileDelArr[] = $chan->getFileName('m_img');
-			$chan->dataFileDel($path);
+			$chan->fileDeleteArray[] = $chan->getFileName('m_img');
+			$chan->dataFileDelete($path);
         break;
     }
 	
@@ -36,8 +36,8 @@ foreach ($idArr as $k) {
                     $chan->table = 'tbl_detail';
                     $chan->pk = 'd_id';
                     $chan->pkValue = $detail['d_id'];
-                    $chan->fileDelArr[] = $detail['d_img'];
-                    $chan->dataFileDel($path);
+                    $chan->fileDeleteArray[] = $detail['d_img'];
+                    $chan->dataFileDelete($path);
                     $chan->dataDelete();
                 }
             }

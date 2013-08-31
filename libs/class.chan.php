@@ -4,50 +4,55 @@
  */
 class chan {
     // 資料庫相關
-    var $charset = 'UTF-8'; // 預設編碼
-    var $host = ''; // Server
-    var $db = ''; // 資料庫名稱
-    var $username = ''; // 帳號
-    var $password = ''; // 密碼
-    var $conn = '';
+    var $charset          = 'UTF-8'; // 預設編碼
+    var $host             = ''; // Server
+    var $db               = ''; // 資料庫名稱
+    var $username         = ''; // 帳號
+    var $password         = ''; // 密碼
+    var $conn             = '';
+    var $makeRecordCount  = true;
+    var $recordCount      = 0; // recordset count
+    var $totalRecordCount = 0; // total recordset count
+    var $lastInsertId     = 0; // 資料庫最新的一筆 id
+    var $fieldArray       = array(); // 欄位陣列
+    var $valueArray       = array(); // 值陣列
+    var $sqlError         = ''; // sql 語法錯誤文字
+    var $table            = ''; // table
+    var $pk               = ''; // primary key
+    var $pkValue          = ''; // primary key value
+
+	// Email 相關
+    var $emailDebug    = false; // 是否顯示 Email 錯誤，true 顯示 false 不顯示
+	var $emailFrom     = '';
+	var $emailTo       = '';
+	var $emailFromName = '';
+	var $emailSubject  = '';
+	var $emailContent  = '';
 
     // 預設參數
-    var $meta = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
-    var $emailFromName = ''; // Email 寄件名稱
-    var $serviceEmail = ''; // 預設的寄件人
-    var $table; // table
-    var $makeRecordCount = true;
-    var $recordCount = 0; // recordset count
-    var $totalRecordCount = 0; // total recordset count
-    var $lastInsertId = 0; // 資料庫最新的一筆 id
-    var $fieldArr = array(); // 欄位陣列
-    var $valueArr = array(); // 值陣列
-    var $sqlError = ''; // sql 語法錯誤文字
-    var $thumbDebug = false; // 是否顯示縮圖錯誤，true 顯示 false 不顯示
-    var $emailDebug = false; // 是否顯示 Email 錯誤，true 顯示 false 不顯示
-    var $loginPage = 'login.php'; // 預設登入頁面
-    var $pk = ''; // primary key
-    var $pkValue = ''; // primary key value
-    var $fileDelArr = array(); // image delete array
+    var $meta            = '<meta http-equiv = "Content-Type" content = "text/html; charset = utf-8" />';
+    var $thumbDebug      = false; // 是否顯示縮圖錯誤，true 顯示 false 不顯示
+    var $loginPage       = 'login.php'; // 預設登入頁面
+    var $fileDeleteArray = array(); // image delete array
     
     // Server 驗證參數
-    private $captchaSource = 'images/captcha/'; // captcha 圖片路徑
-    var $validateArr = array(); // Server 驗證欄位
-    var $validateMsg = ''; // Server 驗證訊息
-    var $validateErr = false; // 是否有誤
+    var $captchaSource   = 'images/captcha/'; // captcha 圖片路徑
+    var $validateArr     = array(); // Server 驗證欄位
+    var $validateMessage = ''; // Server 驗證訊息
+    var $validateError   = false; // 是否有誤
     
     // 資料參數
-    var $page; // 現在頁面參數
-    var $totalPages; // 總分頁數量
+    var $page       = 0; // 現在頁面參數
+    var $totalPages = 0; // 總分頁數量
 
     // 圖片上傳參數
-    var $imgUploadRatio = 1000; // 預設最大寬度
-    var $imgUploadAllowed = array('image/*'); // 預設圖片格式
-    var $imgUploadSize = 2097152; // 預設檔案大小 2MB
+    var $imageUploadRatio   = 1000; // 預設最大寬度
+    var $imageUploadAllowed = array('image/*'); // 預設圖片格式
+    var $imageUploadSize    = 2097152; // 預設檔案大小 2MB
 
     // 檔案上傳參數
     var $fileUploadAllowed = array('image/*, application/*, archives/zip'); // 預設檔案格式
-    var $fileUploadSize = 5242880; // 預設檔案大小 5MB
+    var $fileUploadSize    = 5242880; // 預設檔案大小 5MB
     
     /////////////////////////////////////////////////
     // 環境處理
@@ -130,8 +135,8 @@ class chan {
      * $type - 型態
      */
     function addField($field, $value, $type = 'text') {
-        $this->fieldArr[] = $field;
-        $this->valueArr[] = $this->toSql($value, $type);
+        $this->fieldArray[] = $field;
+        $this->valueArray[] = $this->toSql($value, $type);
     }
 
     /**
@@ -152,10 +157,10 @@ class chan {
      * 刪除資料庫檔案功能
      * $path - 路徑
      **/
-    function dataFileDel($path) {
-        if (count($this->fileDelArr) > 0) {
+    function dataFileDelete($path) {
+        if (count($this->fileDeleteArray) > 0) {
             if (is_dir($path)) {
-                foreach ($this->fileDelArr as $fileName) {
+                foreach ($this->fileDeleteArray as $fileName) {
                     @unlink($path.$fileName);
 
                     $fileDelHead = explode('.', $fileName);
@@ -181,8 +186,8 @@ class chan {
     function dataInsert() {
         $sqlIns = sprintf("INSERT INTO %s (%s) VALUES(%s)",
             $this->table,
-            implode(', ', $this->fieldArr),
-            implode(', ', $this->valueArr));
+            implode(', ', $this->fieldArray),
+            implode(', ', $this->valueArray));
             
         $this->clearFields();
         //echo $sqlIns;exit;
@@ -195,8 +200,8 @@ class chan {
      */
     function dataUpdate($where = '') {
         $sqlStr = array();
-        foreach ($this->fieldArr as $k => $v) {
-            $sqlStr[] = $v.' = '.$this->valueArr[$k];
+        foreach ($this->fieldArray as $k => $v) {
+            $sqlStr[] = $v.' = '.$this->valueArray[$k];
         }
         
         if ($where == '') {
@@ -239,8 +244,8 @@ class chan {
     function clearFields() {
         $this->pk = '';
         $this->pkValue = '';
-        unset($this->fieldArr);
-        unset($this->valueArr);
+        unset($this->fieldArray);
+        unset($this->valueArray);
     }
    
     /////////////////////////////////////////////////
@@ -961,7 +966,7 @@ class chan {
      * $subject - 標題
      * $content - 內容
      */
-    function email($fromEmail = '', $fromName = '', $receiverEmail = '', $subject = '', $content = '') {
+    function email() {
         $class = dirname(__FILE__).'/class.phpmailer.php';
         if (!file_exists($class)) return 'class is not exist';
 
@@ -970,11 +975,11 @@ class chan {
         $mail->CharSet = "UTF-8";
         $mail->Encoding = "base64";
         $mail->IsHTML(true);
-        $mail->FromName = $fromName;
-        $mail->From = $fromEmail;
-        $mail->Subject = $subject;
-        $mail->Body = $content;
-        $mail->AddAddress($receiverEmail);
+        $mail->FromName = $this->emailFromName;
+        $mail->From = $this->emailFrom;
+        $mail->Subject = $this->emailSubject;
+        $mail->Body = $this->emailContent;
+        $mail->AddAddress($this->emailTo);
         if (!$mail->Send() && $this->emailDebug) {
             return $mail->ErrorInfo;
         } else {
@@ -1147,12 +1152,12 @@ class chan {
             $imgName = date('YmdHis').rand(1000, 9999);
             $handle = new upload($_FILES[$img], $lang);
             $handle->file_new_name_body = $imgName;
-            $handle->file_max_size = $this->imgUploadSize;
-            $handle->allowed = $this->imgUploadAllowed;
+            $handle->file_max_size = $this->imageUploadSize;
+            $handle->allowed = $this->imageUploadAllowed;
             $handle->jpeg_quality = 100;
             $handle->image_resize = true;
-            $handle->image_x = $this->imgUploadRatio; 
-            $handle->image_y = $this->imgUploadRatio;
+            $handle->image_x = $this->imageUploadRatio; 
+            $handle->image_y = $this->imageUploadRatio;
             $handle->image_ratio = true;
             $handle->image_ratio_no_zoom_in = true;
             $handle->process($path);
