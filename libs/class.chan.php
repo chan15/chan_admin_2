@@ -37,7 +37,7 @@ class chan {
     
     // Server 驗證參數
     var $captchaSource   = 'images/captcha/'; // captcha 圖片路徑
-    var $validateArr     = array(); // Server 驗證欄位
+    var $validateArray     = array(); // Server 驗證欄位
     var $validateMessage = ''; // Server 驗證訊息
     var $validateError   = false; // 是否有誤
     
@@ -135,7 +135,7 @@ class chan {
      * $type - 型態
      */
     function addField($field, $value, $type = 'text') {
-        $this->fieldArray[] = $field;
+        $this->fieldArray[] = '`'.$field.'`';
         $this->valueArray[] = $this->toSql($value, $type);
     }
 
@@ -190,7 +190,6 @@ class chan {
             implode(', ', $this->valueArray));
             
         $this->clearFields();
-        //echo $sqlIns;exit;
         return $this->sqlExecute($sqlIns);
     }
     
@@ -264,14 +263,16 @@ class chan {
      * $name - 驗證名稱
      * $field - 欄位名稱
      * $type - 驗證型態 text, email, number, positive, boolean, file, duplicate
+     * $tableField - 若型態為 duplicate，要輸入 table 對應的名稱
      * $limit - 字數限制
+     * $method - 傳送類型
      */
     function addValidateField($name, $field, $type = 'text', $tableField = '', $limit = 0, $method = 'POST') {
-        array_push($this->validateArr, array(
+        array_push($this->validateArray, array(
             'name' => $name,
             'field' => $field,
             'type' => $type,
-            'tableField' => $tableField,
+            'tableField' => '`'.$tableField.'`',
             'limit' => $limit,
             'method' => $method)
         );
@@ -280,8 +281,8 @@ class chan {
     /**
      * 驗證欄位功能
      * 先將所需要的欄位使用 addValidateField 加入以後執行此功能
-     * 若有缺少內容或者是型態錯誤會將變數 validateErr 宣告為 true
-     * 並且把錯誤訊息寫入 validateMsg
+     * 若有缺少內容或者是型態錯誤會將變數 validateError 宣告為 true
+     * 並且把錯誤訊息寫入 validateMessage
      */
     function serverValidate() {
         $emailPattern = '/^\w+[\w\+\.\-]*@\w+(?:[\.\-]\w+)*\.\w+$/i'; // Email正規化
@@ -289,7 +290,7 @@ class chan {
         $positvePattern = '/^\d+$/'; // 正整數正規化
         $booleanPattern = '/^\d{0,1}+$/'; // 正規化布林值
         
-        foreach ($this->validateArr as $v) {
+        foreach ($this->validateArray as $v) {
             $value = ($v['type'] == 'file') ? @$_FILES[$v['field']]['name'] : (($v['method'] == 'POST') ? @$_POST[$v['field']] : @$_GET[$v['field']]);
             $name = $v['name'];
             $type = $v['type'];
@@ -297,8 +298,8 @@ class chan {
             $limit = $v['limit'];
 
             if (trim($value) == '') { // 檢查是否為空值
-                $this->validateMsg .= '請填寫'.$name.'<br>';
-                $this->validateErr = true;
+                $this->validateMessage .= '請填寫'.$name.'<br>';
+                $this->validateError = true;
             } else {
                 switch ($type) {
                     case 'email': $pattern = $emailPattern; break; // Email格式
@@ -312,7 +313,6 @@ class chan {
                                 $this->table,
                                 $tableField,
                                 $this->toSql($value, 'text'));
-                            $row = $this->myOneRow($sql);
                         } else {
                             $sql = sprintf("SELECT * FROM %s WHERE %s = %s AND %s != %s",
                                 $this->table,
@@ -320,37 +320,39 @@ class chan {
                                 $this->toSql($value, 'text'),
                                 $this->pk,
                                 $this->toSql($this->pkValue, 'int'));
-                            $row = $this->myOneRow($sql);
                         } 
+
+                        $row = $this->myOneRow($sql);
+
                         if ($row) {
-                            $this->validateMsg .= $name.'重複<br>';
-                            $this->validateErr = true;
+                            $this->validateMessage .= $name.'重複<br>';
+                            $this->validateError = true;
                         }
                         break;
                     default: $pattern = '';
                 }
                 if (!empty($pattern) && !preg_match($pattern, $value)) { // 檢查正規化
-                    $this->validateMsg .= $name.'格式錯誤<br>';
-                    $this->validateErr = true;
+                    $this->validateMessage .= $name.'格式錯誤<br>';
+                    $this->validateError = true;
                 } else {
                     if ($limit > 0 && mb_strlen($value, $this->charset) > $limit) {
-                        $this->validateMsg .= $name.'超過字數<br>';
-                        $this->validateErr = true;
+                        $this->validateMessage .= $name.'超過字數<br>';
+                        $this->validateError = true;
                     }
                 }
             }
         }
         
-        return $this->validateErr;
+        return $this->validateError;
     }
     
     /**
      * 呈現驗證錯誤訊息
      */
     function showValidateMsg() {
-        if ($this->validateErr) {
+        if ($this->validateError) {
             echo $this->meta;
-            echo $this->validateMsg;
+            echo $this->validateMessage;
             exit;            
         }
     }
